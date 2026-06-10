@@ -1,5 +1,8 @@
 $ErrorActionPreference = "SilentlyContinue"
 
+Write-Host "Cleaning up any zombie processes on ports 7000 and 8100..." -ForegroundColor Yellow
+Get-NetTCPConnection -LocalPort 7000, 8100 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }
+
 Write-Host "Checking/Starting Ollama background service..." -ForegroundColor Cyan
 # Start Ollama invisibly. If it's already running, this just gracefully fails/exits.
 Start-Process -FilePath "ollama" -ArgumentList "serve" -WindowStyle Hidden
